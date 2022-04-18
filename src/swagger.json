@@ -1,0 +1,339 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Users Control",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/users": {
+      "post": {
+        "tags": ["users"],
+        "operationId": "createUserController",
+        "summary": "Cria um novo usuário",
+        "description": "Sempre que o usuário é criado a opção <code>admin</code> é iniciada como <code>false</code>.",
+        "requestBody": {
+          "description": "Campos obrigatórios para criação de um usuário",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "johndoe@example.com"
+                  }
+                },
+                "required": ["name", "email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Operação realizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type":"string($uuid)",
+                    "example": "44468cb8-4e98-4ac0-9c16-141cf507dd86"                    
+                    },
+                    "name": {
+                      "type":"string",
+                    "example": "John Doe"                    
+                    },
+                    "email": {
+                      "type":"string",
+                    "example": "johndoe@example.com"                    
+                    },
+                    "admin": {
+                      "type":"boolean",
+                      "example": false
+                    },
+                    "created_at": {
+                      "type":"string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type":"string",
+                      "format": "date-time"
+                    }                            
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "E-mail já está sendo utilizado para outro usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "This e-mail is already in use."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["users"],
+        "operationId": "listAllUsersController",
+        "summary": "Retorna todos os usuários",
+        "description": "Somente o usuários <code>admin</code> pode solicitar a lista de todos usuários",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "description": "Usuário que está solicitando a requisição",
+            "required": true,
+            "schema": {
+              "type": "string($uuid)",
+              "example": "44468cb8-4e98-4ac0-9c16-141cf507dd86"                    
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Operação realizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "id": {
+                        "type":"string($uuid)"
+                      },
+                      "name": {
+                        "type":"string"
+                      },
+                      "email": {
+                        "type":"string"
+                      },
+                      "admin": {
+                        "type":"boolean"
+                      },
+                      "created_at": {
+                        "type":"string",
+                        "format": "date-time"
+                      },
+                      "updated_at": {
+                        "type":"string",
+                        "format": "date-time"
+                      }      
+                    },
+                    "example": [
+                      {
+                        "id": "44468cb8-4e98-4ac0-9c16-141cf507dd86",                 
+                        "name": "John Doe",
+                        "email": "johndoe@example.com",              
+                        "admin": false,
+                        "created_at": "2022-04-18T03:21:05.722Z",
+                        "updated_at": "2022-04-18T03:21:05.722Z"
+                      },
+                      {
+                        "id": "99671575-1d00-487c-81e2-f1d02b594796",                 
+                        "name": "Jane Doe",
+                        "email": "janedoe@example.com",              
+                        "admin": false,
+                        "created_at": "2022-04-18T03:21:05.722Z",
+                        "updated_at": "2022-04-18T03:21:05.722Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Usuário não tem permissão ou usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "You need to be an administrator to list all users."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "tags": ["users"],
+        "operationId": "showUserProfileController",
+        "summary": "Retorna um usuário específico",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "Id do usuário a ser procurado.",
+            "required": true,
+            "schema": {
+              "type": "string($uuid)",
+              "example": "44468cb8-4e98-4ac0-9c16-141cf507dd86"                    
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Operação realizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "id": {
+                        "type":"string($uuid)"
+                      },
+                      "name": {
+                        "type":"string"
+                      },
+                      "email": {
+                        "type":"string"
+                      },
+                      "admin": {
+                        "type":"boolean"
+                      },
+                      "created_at": {
+                        "type":"string",
+                        "format": "date-time"
+                      },
+                      "updated_at": {
+                        "type":"string",
+                        "format": "date-time"
+                      }      
+                    },
+                    "example": {
+                      "id": "44468cb8-4e98-4ac0-9c16-141cf507dd86",                 
+                      "name": "John Doe",
+                      "email": "johndoe@example.com",              
+                      "admin": false,
+                      "created_at": "2022-04-18T03:21:05.722Z",
+                      "updated_at": "2022-04-18T03:21:05.722Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "User not found."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }      
+    },
+    "/users/{user_id}/admin": {
+      "patch": {
+        "tags": ["users"],
+        "operationId": "turnUserAdminController",
+        "summary": "Altera o usuário para administrador",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "Id do usuário a ser alterado.",
+            "required": true,
+            "schema": {
+              "type": "string($uuid)",
+              "example": "44468cb8-4e98-4ac0-9c16-141cf507dd86"                    
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Operação realizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "id": {
+                        "type":"string($uuid)"
+                      },
+                      "name": {
+                        "type":"string"
+                      },
+                      "email": {
+                        "type":"string"
+                      },
+                      "admin": {
+                        "type":"boolean"
+                      },
+                      "created_at": {
+                        "type":"string",
+                        "format": "date-time"
+                      },
+                      "updated_at": {
+                        "type":"string",
+                        "format": "date-time"
+                      }      
+                    },
+                    "example": {
+                      "id": "44468cb8-4e98-4ac0-9c16-141cf507dd86",                 
+                      "name": "John Doe",
+                      "email": "johndoe@example.com",              
+                      "admin": true,
+                      "created_at": "2022-04-18T03:21:05.722Z",
+                      "updated_at": "2022-04-18T03:21:05.722Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "User not found."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }      
+    }
+  }
+}
